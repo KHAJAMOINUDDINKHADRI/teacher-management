@@ -1,103 +1,276 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import TeacherProfileCard, {
+  EditableTeacher,
+} from "../components/TeacherProfileCard";
+import QualificationsTable from "../components/QualificationsTable";
+import Tabs from "../components/Tabs";
+import ScheduleCalendar from "../components/ScheduleCalendar";
+import type { Lesson } from "../components/ScheduleCalendar";
+import { teachers, Teacher } from "../data/teachers";
+import { students } from "../data/students";
+import type { Qualification } from "../data/teachers";
+import { IoIosArrowDown } from "react-icons/io";
+import {
+  mockAvailability,
+  mockUnavailabilities,
+  mockSchedule,
+  mockInvoicedLessons,
+  mockUnscheduledLesson,
+  mockTimeVoucher,
+} from "../data/scheduleMock";
+
+type TeacherWithExtras = Teacher & {
+  emails?: string[];
+  phones?: string[];
+  addresses?: string[];
+};
+
+function getTabPanels(activeTeacher: Teacher): Record<string, React.ReactNode> {
+  return {
+    Availability: (
+      <div className="p-6">Availability content coming soon...</div>
+    ),
+    Unavailabilities: (
+      <div className="p-6">Unavailabilities content coming soon...</div>
+    ),
+    Students: (
+      <div className="p-6 overflow-x-auto">
+        <table className="min-w-full text-sm border border-gray-200 dark:border-gray-800 rounded-lg">
+          <thead>
+            <tr>
+              <th className="px-3 py-2 text-left">Name</th>
+              <th className="px-3 py-2 text-left">Email</th>
+              <th className="px-3 py-2 text-left">Phone</th>
+              <th className="px-3 py-2 text-left">Courses</th>
+            </tr>
+          </thead>
+          <tbody>
+            {students
+              .filter((s) => s.assignedTeacherId === activeTeacher.id)
+              .map((s) => (
+                <tr
+                  key={s.id}
+                  className="border-t border-gray-100 dark:border-gray-800"
+                >
+                  <td className="px-3 py-2">{s.name}</td>
+                  <td className="px-3 py-2">{s.email}</td>
+                  <td className="px-3 py-2">{s.phone}</td>
+                  <td className="px-3 py-2">{s.enrolledCourses.join(", ")}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    ),
+    Schedule: <ScheduleCalendar lessons={mockSchedule} />,
+    "Invoiced Lessons": (
+      <div className="p-6">Invoiced Lessons content coming soon...</div>
+    ),
+    "Unscheduled Lesson": (
+      <div className="p-6">Unscheduled Lesson content coming soon...</div>
+    ),
+    "Time Voucher": (
+      <div className="p-6">Time Voucher content coming soon...</div>
+    ),
+    Comments: <div className="p-6">Comments content coming soon...</div>,
+    History: <div className="p-6">History content coming soon...</div>,
+  };
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [activeTab, setActiveTab] = useState("Availability");
+  const [selectedTeacher, setSelectedTeacher] =
+    useState<TeacherWithExtras | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Hydration-safe: load from localStorage on mount
+  useEffect(() => {
+    const stored =
+      typeof window !== "undefined"
+        ? localStorage.getItem("teacher-profile")
+        : null;
+    if (stored) {
+      setSelectedTeacher(JSON.parse(stored));
+    } else {
+      setSelectedTeacher(teachers[0]);
+    }
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    if (selectedTeacher) {
+      localStorage.setItem("teacher-profile", JSON.stringify(selectedTeacher));
+    }
+  }, [selectedTeacher]);
+
+  if (!selectedTeacher) return null;
+
+  // Convert to EditableTeacher
+  const editableTeacher: EditableTeacher = {
+    ...selectedTeacher,
+    emails: Array.isArray((selectedTeacher as TeacherWithExtras).emails)
+      ? (selectedTeacher as TeacherWithExtras).emails!
+      : selectedTeacher.email
+      ? [selectedTeacher.email]
+      : [],
+    phones: Array.isArray((selectedTeacher as TeacherWithExtras).phones)
+      ? (selectedTeacher as TeacherWithExtras).phones!
+      : selectedTeacher.phone
+      ? [selectedTeacher.phone]
+      : [],
+    addresses: Array.isArray((selectedTeacher as TeacherWithExtras).addresses)
+      ? (selectedTeacher as TeacherWithExtras).addresses!
+      : selectedTeacher.address
+      ? [selectedTeacher.address]
+      : [],
+  };
+
+  // Handlers for profile and qualifications
+  const handleProfileChange = (updated: EditableTeacher) => {
+    setSelectedTeacher({
+      ...selectedTeacher,
+      name: updated.name,
+      role: updated.role,
+      id: updated.id,
+      birthDate: updated.birthDate,
+      email: updated.emails[0] || "",
+      phone: updated.phones[0] || "",
+      address: updated.addresses[0] || "",
+      // Store arrays as extra fields for persistence
+      emails: updated.emails,
+      phones: updated.phones,
+      addresses: updated.addresses,
+      qualifications: selectedTeacher.qualifications,
+      groupQualifications: selectedTeacher.groupQualifications,
+    });
+  };
+  const handlePrivateQualsChange = (quals: Qualification[]) => {
+    setSelectedTeacher({ ...selectedTeacher, qualifications: quals });
+  };
+  const handleGroupQualsChange = (quals: Qualification[]) => {
+    setSelectedTeacher({ ...selectedTeacher, groupQualifications: quals });
+  };
+
+  // Select lessons data based on activeTab
+  let lessons: Lesson[] = [];
+  if (activeTab === "Availability") lessons = mockAvailability;
+  else if (activeTab === "Unavailabilities") lessons = mockUnavailabilities;
+  else if (activeTab === "Schedule") lessons = mockSchedule;
+  else if (activeTab === "Invoiced Lessons") lessons = mockInvoicedLessons;
+  else if (activeTab === "Unscheduled Lesson") lessons = mockUnscheduledLesson;
+  else if (activeTab === "Time Voucher") lessons = mockTimeVoucher;
+
+  return (
+    <div className="flex flex-col gap-8 items-center w-full mt-8">
+      <div className="w-full max-w-5xl mx-auto flex flex-col gap-8">
+        <div className="flex-1 max-w-fit md:w-full">
+          <div className="relative">
+            <button
+              className="flex items-center gap-2 text-xl font-semibold mb-4 text-gray-600 dark:text-gray-100 focus:outline-none w-full"
+              onClick={() => setDropdownOpen((open) => !open)}
+              aria-haspopup="listbox"
+              aria-expanded={dropdownOpen}
+            >
+              <span>Teachers</span>
+              <span className="mx-1 text-gray-600 dark:text-gray-100">/</span>
+              <span className="text-gray-900 dark:text-white">
+                {selectedTeacher.name}
+              </span>
+              <IoIosArrowDown className="text-gray-900 dark:text-white" />
+            </button>
+            {dropdownOpen && (
+              <ul
+                className="absolute z-10 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto"
+                role="listbox"
+              >
+                {teachers.map((t) => (
+                  <li key={t.id}>
+                    <button
+                      className={`w-full text-left px-4 py-2 rounded-lg transition-colors font-medium ${
+                        selectedTeacher.id === t.id
+                          ? "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                      }`}
+                      onClick={() => {
+                        setSelectedTeacher(t);
+                        setDropdownOpen(false);
+                      }}
+                      role="option"
+                      aria-selected={selectedTeacher.id === t.id}
+                    >
+                      {t.name}{" "}
+                      <span className="text-xs text-gray-400 ml-2">
+                        ({t.role})
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div className="flex-1">
+          <TeacherProfileCard
+            teacher={editableTeacher}
+            onChange={handleProfileChange}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <QualificationsTable
+            title="Private Qualifications"
+            data={selectedTeacher.qualifications}
+            onChange={handlePrivateQualsChange}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <QualificationsTable
+            title="Group Qualifications"
+            data={selectedTeacher.groupQualifications}
+            onChange={handleGroupQualsChange}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
+      <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
+      <section className="w-full max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-xl shadow mt-2">
+        {[
+          "Availability",
+          "Unavailabilities",
+          "Schedule",
+          "Invoiced Lessons",
+          "Unscheduled Lesson",
+          "Time Voucher",
+        ].includes(activeTab) ? (
+          <ScheduleCalendar lessons={lessons} />
+        ) : activeTab === "Students" ? (
+          <div className="overflow-x-auto p-4">
+            <table className="min-w-full text-sm border border-gray-200 dark:border-gray-800 rounded-lg">
+              <thead>
+                <tr>
+                  <th className="px-3 py-2 text-left">Name</th>
+                  <th className="px-3 py-2 text-left">Email</th>
+                  <th className="px-3 py-2 text-left">Phone</th>
+                  <th className="px-3 py-2 text-left">Courses</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((s) => (
+                  <tr
+                    key={s.id}
+                    className="border-t border-gray-100 dark:border-gray-800"
+                  >
+                    <td className="px-3 py-2">{s.name}</td>
+                    <td className="px-3 py-2">{s.email}</td>
+                    <td className="px-3 py-2">{s.phone}</td>
+                    <td className="px-3 py-2">
+                      {s.enrolledCourses.join(", ")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          getTabPanels(selectedTeacher)[activeTab]
+        )}
+      </section>
     </div>
   );
 }

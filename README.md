@@ -1,8 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Teacher Management Web App
+
+A modern, responsive teacher management system built with **Next.js**, **TypeScript**, and **Tailwind CSS**.  
+Easily manage teachers, students, schedules, and payments with a clean, accessible UI.
+
+---
+
+## Features
+
+- **Teacher Profiles:**
+
+  - View and edit teacher details, including multiple emails, phones, and addresses.
+  - Qualifications management (private and group).
+
+- **Student Management:**
+
+  - View all students and their assigned teachers.
+  - Responsive tables and cards.
+
+- **Schedule & Calendar:**
+
+  - Weekly schedule view with mock data.
+  - Tabs for Availability, Unavailabilities, Schedule, and more.
+
+- **Payments:**
+
+  - Modern payment form with validation, loading states, and user feedback.
+  - Accessible from the sidebar.
+
+- **Responsive Sidebar & Header:**
+
+  - Mobile-first sidebar with hamburger menu.
+  - Smooth transitions and adaptive layout.
+
+- **Accessibility:**
+
+  - Keyboard navigation, ARIA attributes, and color contrast.
+  - Semantic HTML and screen reader support.
+
+- **LocalStorage Persistence:**
+  - Edits to teacher profiles are saved locally for a seamless experience.
+
+---
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org/) (App Router)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React Icons](https://react-icons.github.io/react-icons/)
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. **Clone the repository**
+
+```bash
+git clone https://github.com/your-username/teacher-management.git
+cd teacher-management
+```
+
+### 2. **Install dependencies**
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### 3. **Run the development server**
 
 ```bash
 npm run dev
@@ -10,27 +78,67 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Build for Production
 
-## Learn More
+```bash
+npm run build
+npm start
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Linting & Type Checking
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run lint
+```
 
-## Deploy on Vercel
+TypeScript is enabled with strict settings for maximum type safety.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+src/
+  app/                # Next.js app directory (pages, layout, etc.)
+  components/         # Reusable React components (Sidebar, Header, PaymentForm, etc.)
+  data/               # Mock data for teachers, students, schedules
+  styles/             # Global styles (if any)
+public/               # Static assets
+```
+
+---
+
+## Accessibility
+
+- All forms and interactive elements are keyboard accessible.
+- ARIA attributes and roles are used for screen readers.
+- Color contrast meets WCAG guidelines.
+- Semantic HTML is used throughout.
+
+---
+
+## Customization
+
+- **Add more teachers/students:** Edit `src/data/teachers.ts` and `src/data/students.ts`.
+- **Change schedule data:** Edit `src/data/scheduleMock.ts`.
+- **Styling:** Modify Tailwind classes or extend the Tailwind config as needed.
+
+---
+
+## Acknowledgements
+
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React Icons](https://react-icons.github.io/react-icons/)
+
+---
+
+**Enjoy managing your teachers and students with ease!**
