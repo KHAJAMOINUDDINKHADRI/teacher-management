@@ -56,7 +56,7 @@ Easily manage teachers, students, schedules, and payments with a clean, accessib
 ### 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/your-username/teacher-management.git
+git clone https://github.com/KHAJAMOINUDDINKHADRI/teacher-management.git
 cd teacher-management
 ```
 
@@ -122,14 +122,6 @@ public/               # Static assets
 - ARIA attributes and roles are used for screen readers.
 - Color contrast meets WCAG guidelines.
 - Semantic HTML is used throughout.
-
----
-
-## Customization
-
-- **Add more teachers/students:** Edit `src/data/teachers.ts` and `src/data/students.ts`.
-- **Change schedule data:** Edit `src/data/scheduleMock.ts`.
-- **Styling:** Modify Tailwind classes or extend the Tailwind config as needed.
 
 ---
 
