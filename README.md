@@ -3,6 +3,11 @@
 A modern, responsive teacher management system built with **Next.js**, **TypeScript**, and **Tailwind CSS**.  
 Easily manage teachers, students, schedules, and payments with a clean, accessible UI.
 
+## 📺 Demo & Walkthrough
+
+- **🎥 Loom Video Walkthrough:** [Watch the full demo](https://www.loom.com/share/a7f194d3777443d4a7384dbbbdc245c0?sid=f1f4f1a0-9d1b-4458-8e4c-ab6d7c379e0f)
+- **🌐 Live Website:** [Visit the deployed app](https://teacher-management-kmk.netlify.app)
+
 ---
 
 ## Features
